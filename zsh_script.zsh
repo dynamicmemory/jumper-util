@@ -1,7 +1,8 @@
 # This stuff is for jumper 
 jmp() {
     local dest 
-    dest=$(python ~/projects/jumper/proto.py "$1")
+    # dest=$(python ~/projects/jumper/proto.py "$1")
+    dest=$(~/projects/jumper/jumper "$1")
 
     if [[ -z "$dest" ]]; then 
         echo "jmp: No directory found or invalid input."

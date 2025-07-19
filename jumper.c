@@ -72,49 +72,44 @@ int main(int argc, char *argv[]) {
 
     walk_dir("/home/lenny", jump_to, &directory);
 
-    for (size_t i = 0; i < directory.count; i++) 
-        printf("%s", directory.items[i]);
+    if (directory.count == 0) {
+        printf("No directories named %s found.", jump_to);
+        free_list(&directory);
+        return 0;
+    }
+
+    if (directory.count == 1) {
+        printf("%s", directory.items[0]);
+        free_list(&directory);
+        return 0;
+    }
+
+    fprintf(stderr, "Pick which directory you want:\n");
+    for(size_t i = 0; i < directory.count; i++){
+        fprintf(stderr, "%zu) %s\n", i + 1, directory.items[i]);
+    }
+
+    while (1) {
+        fprintf(stderr, "Enter selection: ");
+        char buf[16];
+        if (!fgets(buf, sizeof(buf), stdin)) {
+            fprintf(stderr, "Error reading input.\n");
+            continue;
+        }
+        char *endptr;
+        long choice = strtol(buf, &endptr, 10);
+        if (endptr == buf || *endptr != '\n') {
+            fprintf(stderr, "please enter a valid number.\n");
+            continue;
+        }
+        if (choice >= 1 && choice <= (long)directory.count) {
+            printf("%s", directory.items[choice - 1]);
+            break;
+        }
+        else 
+            fprintf(stderr, "Invalid selection. Enter a number between 1 and %zu.\n", directory.count);
+    }
 
     free_list(&directory);
     return 0;
 }
-
-
-//
-// def main() -> None:
-//     if len(sys.argv) != 2:
-//         print(f"Usage: {sys.argv[0]} <directory_name>", file=sys.stderr)
-//         sys.exit(1)
-//
-//     jump_to = sys.argv[1]
-//     directory_options = []
-//
-//     for root, dirs, files in os.walk("/"):
-//         for d in dirs:
-//             if d == jump_to:
-//                 directory_options.append(os.path.join(root,d))
-//
-//     if not directory_options:
-//         print(f"No directories named '{jump_to}' found.", file=sys.stderr)
-//         sys.exit(1)
-//
-//     if len(directory_options) == 1:
-//         print(directory_options[0])
-//         return 
-//
-//     print("Pick which directory you want:", file=sys.stderr)
-//     for idx, option in enumerate(directory_options, 1):
-//         print(f"{idx}) {option}", file=sys.stderr)
-//
-//     while True:
-//         try:
-//             print("Enter selection: ", end='', file=sys.stderr)
-//             choice = input()
-//             index = int(choice) - 1
-//             if 0 <= index < len(directory_options):
-//                 print(directory_options[index])
-//                 return 
-//             else:
-//                 print(f"Invalid selection. Enter a number between 1 and {len(directory_options)}.", file=sys.stderr)
-//         except ValueError:
-//             print("Please enter a vliad number.", file=sys.stderr) 
